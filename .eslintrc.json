@@ -4,7 +4,7 @@
     "es6": true,
     "node": true
   },
-  "extends": ["prettier", "airbnb-base"],
+  "extends": ["prettier", "airbnb"],
   "plugins": ["prettier"],
   "globals": {
     "Atomics": "readonly",
