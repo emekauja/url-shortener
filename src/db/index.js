@@ -9,7 +9,6 @@ const {
   validateUrl,
 } = require('../utils');
 const url = require('url');
-const { nanoid } = require('nanoid');
 
 const db = {};
 const basename = path.basename(__filename);
@@ -70,16 +69,31 @@ db.addUrl = () => {};
  * @param  {JSON} query JSON structure holding the query url arguments
  * @return {STRING} output string containing the actual shortenedUrl results, the result count and error
  */
-db.getShortUrl = async (url) => {
+db.shortenUrl = async (url) => {
   const id = generateId;
   const host = new URL('https://shorten.url').host;
-  const shortenedUrl = generateShortUrl(id, host);
-  //console.log(db.url);
-  const dbObject = await db.url.create({
-    longUrl: url,
-    shortUrl: shortenedUrl,
-  });
-  return dbObject;
+  const shortUrl = generateShortUrl(id, host);
+  const UrlModel = db.url;
+
+  if (validateUrl(url)) {
+    const longUrl = addProtocol(url);
+    const findUrl = await UrlModel.findOne({
+      where: { longUrl },
+    });
+
+    if (findUrl) {
+      return findUrl.dataValues;
+    }
+
+    const urlObject = await UrlModel.create({
+      longUrl,
+      shortUrl,
+    });
+
+    return urlObject;
+  } else {
+    return new Error('missing or incorrect url');
+  }
 };
 
 module.exports = db;

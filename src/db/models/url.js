@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
       },
       longUrl: {
         type: DataTypes.STRING,
@@ -25,7 +26,6 @@ module.exports = (sequelize, DataTypes) => {
       freezeTableName: true,
       tableName: 'url',
       indexes: [
-
         {
           unique: false,
           fields: ['longUrl'],

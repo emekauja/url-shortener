@@ -10,7 +10,7 @@ const {
 /**
  * @functions {database interactions}
  */
-const { getShortUrl /*  addUrl, incrementClicks */ } = require('../db');
+const { shortenUrl /*  addUrl, incrementClicks */ } = require('../db');
 
 const urlType = new GraphQLObjectType({
   name: 'Url',
@@ -49,7 +49,7 @@ module.exports = new GraphQLSchema({
             type: new GraphQLNonNull(GraphQLString),
           },
         },
-        resolve: (_, { url }) => getShortUrl(url),
+        resolve: (_, { url }) => shortenUrl(url),
       },
     }),
   }),
