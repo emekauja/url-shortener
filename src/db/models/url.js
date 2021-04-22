@@ -8,11 +8,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       longUrl: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING,
         allowNull: false,
       },
       shortUrl: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING,
         unique: true,
         allowNull: false,
       },
@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       freezeTableName: true,
       tableName: 'url',
       indexes: [
+
         {
           unique: false,
           fields: ['longUrl'],

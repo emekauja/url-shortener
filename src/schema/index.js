@@ -10,7 +10,7 @@ const {
 /**
  * @functions {database interactions}
  */
-//const { getUrls, addUrl, incrementClicks } = require('../db');
+const { getShortUrl /*  addUrl, incrementClicks */ } = require('../db');
 
 const urlType = new GraphQLObjectType({
   name: 'Url',
@@ -19,19 +19,19 @@ const urlType = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: GraphQLID,
-      description: '',
+      description: '...',
     },
     longUrl: {
       type: GraphQLString,
-      description: '',
+      description: '...',
     },
     shortUrl: {
       type: GraphQLString,
-      description: '',
+      description: '...',
     },
     clickCount: {
       type: GraphQLInt,
-      description: '',
+      description: '...',
     },
   }),
 });
@@ -49,17 +49,17 @@ module.exports = new GraphQLSchema({
             type: new GraphQLNonNull(GraphQLString),
           },
         },
-        //resolve: (root, { url }) => createShortUrl(url)
+        resolve: (_, { url }) => getShortUrl(url),
       },
     }),
   }),
-  mutation: new GraphQLObjectType({
+  /*   mutation: new GraphQLObjectType({
     name: 'Mutation',
     description: '',
 
     fields: () => ({
       addUrl: {},
     }),
-  }),
+  }), */
   types: [urlType],
 });
