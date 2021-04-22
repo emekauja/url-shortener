@@ -2,11 +2,20 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const { generate } = require('shortid');
+const {
+  generateId,
+  generateShortUrl,
+  addProtocol,
+  validateUrl,
+} = require('../utils');
+const url = require('url');
+const { nanoid } = require('nanoid');
 
 const db = {};
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
+/* const myURL =
+  url.parse('https://user:pass@sub.short.com:4000/p/a/t/h?query=string#hash'); */
 
 // define the sequelize ORM instance and connect it to the db
 const sequelize = new Sequelize(
@@ -32,11 +41,10 @@ fs.readdirSync(path.join(__dirname, './models'))
       file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js'
   )
   .forEach((file) => {
-    //const model = sequelize['import'](path.join(__dirname, './models', file));
-    const model = require(path.join(__dirname, './models', file))(
-      sequelize,
-      Sequelize
-    );
+    const modelFile = path.join(__dirname, './models', file);
+
+    //const model = sequelize.import(path.join(__dirname, './models', file));
+    const model = require(modelFile)(sequelize, Sequelize);
     db[model.name] = model;
   });
 
@@ -56,21 +64,22 @@ db.Sequelize = Sequelize;
 
 db.addUrl = () => {};
 
-db.createShortUrl = (url) => {
-  const { longUrl } = url;
-  const regex = new RegExp('^(http|https)://', 'i');
-
-  const shortUrl = generateShortUrl();
-
-  if (longUrl) {
-    if (!regex.test(longUrl)) {
-      longUrl = 'https://' + longUrl;
-    }
-    //create input in database
-    // return short url
-  } else {
-    return new Error('missing or incorrect url');
-  }
+/**
+ * getShortUrl - adding Urls to database and shortUrl based query
+ *
+ * @param  {JSON} query JSON structure holding the query url arguments
+ * @return {STRING} output string containing the actual shortenedUrl results, the result count and error
+ */
+db.getShortUrl = async (url) => {
+  const id = generateId;
+  const host = new URL('https://shorten.url').host;
+  const shortenedUrl = generateShortUrl(id, host);
+  //console.log(db.url);
+  const dbObject = await db.url.create({
+    longUrl: url,
+    shortUrl: shortenedUrl,
+  });
+  return dbObject;
 };
 
 module.exports = db;
