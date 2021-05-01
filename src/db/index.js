@@ -13,8 +13,6 @@ const url = require('url');
 const db = {};
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-/* const myURL =
-  url.parse('https://user:pass@sub.short.com:4000/p/a/t/h?query=string#hash'); */
 
 // define the sequelize ORM instance and connect it to the db
 const sequelize = new Sequelize(
@@ -27,6 +25,7 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
     schema: process.env.DB_SCHEMA,
+    query: { raw: true },
   }
 );
 console.log(
@@ -41,16 +40,12 @@ fs.readdirSync(path.join(__dirname, './models'))
   )
   .forEach((file) => {
     const modelFile = path.join(__dirname, './models', file);
-
-    //const model = sequelize.import(path.join(__dirname, './models', file));
     const model = require(modelFile)(sequelize, Sequelize);
     db[model.name] = model;
   });
 
 // define the relationships between the entities
-/* db.user.belongsTo(db.org);
-db.user.belongsToMany(db.role, { through: 'userrole' });
-db.role.belongsToMany(db.user, { through: 'userrole' }); */
+/* db.url.belongsTo(db)*/
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
@@ -61,17 +56,17 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.addUrl = () => {};
+const UrlModel = db.url;
 
 /**
- * getShortUrl - adding Urls to database and shortUrl based query
+ * shortenUrl - adding Urls to database and shortUrl based query
  *
  * @param  {JSON} query JSON structure holding the query url arguments
  * @return {STRING} output string containing the actual shortenedUrl results, the result count and error
  */
-db.shortenUrl = async (url) => {
+db.shortenUrl = async (url, address) => {
   const id = generateId;
-  const host = new URL('https://shorten.url').host;
+  const host = new URL(addProtocol(address)).host;
   const shortUrl = generateShortUrl(id, host);
   const UrlModel = db.url;
 
@@ -82,7 +77,7 @@ db.shortenUrl = async (url) => {
     });
 
     if (findUrl) {
-      return findUrl.dataValues;
+      return findUrl;
     }
 
     const urlObject = await UrlModel.create({
@@ -95,5 +90,33 @@ db.shortenUrl = async (url) => {
     return new Error('missing or incorrect url');
   }
 };
+
+/**
+ * incrementClickCount - increment Url clicks in database and shortUrl based query
+ *
+ * @param  {UUID} mutation  structure holding the mutation url arguments
+ * @return {NUMBER} output number containing the actual increment results, the result click count and error
+ */
+db.incrementClickCounts = async (id) => {
+  const url = await UrlModel.findById(id);
+  if (url) {
+    url.clickCount++;
+    url.save();
+    return url;
+  } else {
+    return new Error('missing or incorrect id');
+  }
+};
+
+// synchronize the sequelize mode with postgres (and alters the database if needed)
+//console.log('Attention : db schema recreate started...');
+db.sequelize.sync({ force: true, logging: console.log });
+
+try {
+  db.sequelize.authenticate();
+  console.log('Connection has been established successfully.');
+} catch (error) {
+  console.error('Unable to connect to the database:', error);
+}
 
 module.exports = db;

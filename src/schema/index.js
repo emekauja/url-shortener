@@ -10,28 +10,27 @@ const {
 /**
  * @functions {database interactions}
  */
-const { shortenUrl /*  addUrl, incrementClicks */ } = require('../db');
 
 const urlType = new GraphQLObjectType({
   name: 'Url',
-  description: '...',
+  description: 'object type url',
 
   fields: () => ({
     id: {
       type: GraphQLID,
-      description: '...',
+      description: 'unique uuid for each url.',
     },
     longUrl: {
       type: GraphQLString,
-      description: '...',
+      description: 'original url to be shorten.',
     },
     shortUrl: {
       type: GraphQLString,
-      description: '...',
+      description: 'shorten url of the original url.',
     },
     clickCount: {
       type: GraphQLInt,
-      description: '...',
+      description: 'total number of clicks and visits for a url.',
     },
   }),
 });
@@ -39,7 +38,7 @@ const urlType = new GraphQLObjectType({
 module.exports = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'Query',
-    description: '...',
+    description: 'query with one args(url: to be shortened).',
 
     fields: () => ({
       shortenURL: {
@@ -49,17 +48,26 @@ module.exports = new GraphQLSchema({
             type: new GraphQLNonNull(GraphQLString),
           },
         },
-        resolve: (_, { url }) => shortenUrl(url),
+        resolve: (_, { url }, { db, address }, info) =>
+          db.shortenUrl(url, address, info),
       },
     }),
   }),
-  /*   mutation: new GraphQLObjectType({
+  mutation: new GraphQLObjectType({
     name: 'Mutation',
     description: '',
 
     fields: () => ({
-      addUrl: {},
+      incrementUrlVisits: {
+        type: urlType,
+        description:
+          'everytime a user clicks on a url link, it increments the total number of clicks for this url.',
+        args: {
+          id: { type: GraphQLID },
+        },
+        resolve: (_, { id }, { db }, info) => db.incrementClickCounts(id, info),
+      },
     }),
-  }), */
+  }),
   types: [urlType],
 });
