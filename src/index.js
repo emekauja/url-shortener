@@ -27,4 +27,4 @@ app.get('/', (req, res) => {
   res.end();
 });
 
-app.listen(API_PORT, console.log(`server has started on port ${API_PORT}`));
+app.listen(PORT, console.log(`server has started on port ${PORT}`));
