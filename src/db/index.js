@@ -26,6 +26,7 @@ const sequelize = new Sequelize(
     dialect: process.env.DB_DIALECT,
     schema: process.env.DB_SCHEMA,
     query: { raw: true },
+    logging: console.log,
   }
 );
 console.log(
