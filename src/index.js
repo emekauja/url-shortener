@@ -7,7 +7,7 @@ const db = require('./db');
 const redirect = require('./handlers');
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 
 app.use(cors());
 app.get('/:shortUrl', redirect);
