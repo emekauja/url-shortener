@@ -24,10 +24,10 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'postgres' || process.env.DB_DIALECT,
+    use_env_variable: process.env.DATABASE_URL,
     schema: process.env.DB_SCHEMA,
     query: { raw: true },
-  },
-  { use_env_variable: process.env.DATABASE_URL }
+  }
 );
 console.log(
   `🚀 sequelize ORM connected to ${process.env.DB_DIALECT} @ ${process.env.DB_HOST}:${process.env.DB_PORT}`
