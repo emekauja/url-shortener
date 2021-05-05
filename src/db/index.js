@@ -13,9 +13,20 @@ const url = require('url');
 const db = {};
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.json')[env];
 
 // define the sequelize ORM instance and connect it to the db
-const sequelize = new Sequelize(
+if (config.use_env_variable) {
+  var sequelize = new Sequelize(
+    process.env[config.use_env_variable],
+    config,
+    null,
+    {
+      dialect: 'postgres' || process.env.DB_DIALECT,
+    }
+  );
+}
+var sequelize = new Sequelize(
   process.env.DB_DATABASE,
   process.env.DB_USERNAME,
   process.env.DB_PASSWORD,
@@ -24,7 +35,6 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'postgres' || process.env.DB_DIALECT,
-    use_env_variable: process.env.DATABASE_URL,
     schema: process.env.DB_SCHEMA,
     query: { raw: true },
   }
