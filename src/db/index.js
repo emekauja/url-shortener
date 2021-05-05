@@ -27,7 +27,7 @@ const sequelize = new Sequelize(
     schema: process.env.DB_SCHEMA,
     query: { raw: true },
   },
-  { use_env_variable: proccess.env.DATABASE_URL }
+  { use_env_variable: process.env.DATABASE_URL }
 );
 console.log(
   `🚀 sequelize ORM connected to ${process.env.DB_DIALECT} @ ${process.env.DB_HOST}:${process.env.DB_PORT}`
