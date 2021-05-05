@@ -21,7 +21,7 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     db: process.env.DB_DATABASE,
-    host: process.env.DB_HOST,
+    host: '127.0.0.1' || process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'postgres' || process.env.DB_DIALECT,
     schema: process.env.DB_SCHEMA,
